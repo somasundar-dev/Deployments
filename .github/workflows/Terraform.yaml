@@ -2,9 +2,6 @@ name: Terraform CI/CD
 
 on:
   workflow_call:
-    secrets:
-      GITHUB_TOKEN:
-        required: true
     inputs:
       run_deployment:
         description: "Terraform Apply to Deploy Changes"
