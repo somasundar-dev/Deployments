@@ -1,0 +1,42 @@
+name: CSharpier Format Check
+
+on:
+  workflow_call:
+  workflow_dispatch:
+    inputs:
+      format:
+        description: "Run CSharpier format check"
+        required: true
+        default: true
+        type: boolean
+
+jobs:
+  csharpier-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Install .NET SDK
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Restore .NET Tools
+        run: dotnet tool restore
+
+      - name: Run CSharpier Formatting
+        if: ${{ github.event.inputs.format == 'true' && github.ref != 'refs/heads/main' }}
+        run: dotnet csharpier .
+
+      - name: Commit and Push Changes
+        if: ${{ github.event.inputs.format == 'true' && github.ref != 'refs/heads/main' }}
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -m "Apply CSharpier formatting"
+          git push origin HEAD:${{ github.ref_name }}
+
+      - name: Run CSharpier Check
+        run: dotnet csharpier --check .
