@@ -38,13 +38,15 @@ jobs:
         run: |
           echo ${{ inputs.TF_WORKING_DIR }}
           echo ${{ inputs.tfvars_path }}
+          echo "List Current Directory"
+          ls
 
       - name: Terraform Init
         run: terraform init
         working-directory: ${{ inputs.TF_WORKING_DIR }}
 
       - name: Terraform Format
-        run: terraform fmt -check -var-file=${{ inputs.tfvars_path }}
+        run: terraform fmt -check
         working-directory: ${{ inputs.TF_WORKING_DIR }}
 
       - name: Terraform Validate
