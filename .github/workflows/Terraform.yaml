@@ -56,6 +56,11 @@ jobs:
         working-directory: ${{ inputs.TF_WORKING_DIR }}
 
       - name: Terraform Apply
-        if: github.event_name == 'push'
+        if: inputs.run_deployment
         run: terraform apply -auto-approve tfplan
+        working-directory: ${{ inputs.TF_WORKING_DIR }}
+
+      - name: Terraform Destroy
+        if: inputs.run_destroy
+        run: terraform destroy -auto-approve tfplan
         working-directory: ${{ inputs.TF_WORKING_DIR }}
