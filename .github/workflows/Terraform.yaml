@@ -1,0 +1,46 @@
+name: Terraform CI/CD
+
+on:
+  workflow_call:
+    inputs:
+      tfvars_path:
+        description: "Path to the tfvars file"
+        required: true
+        type: string
+      TF_WORKING_DIR:
+        description: "Terraform working directory"
+        required: true
+        type: string
+
+jobs:
+  terraform:
+    name: "Terraform Plan and Apply"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Init
+        run: terraform init
+        working-directory: ${{ inputs.TF_WORKING_DIR }}
+
+      - name: Terraform Format
+        run: terraform fmt -check -var-file=${{ inputs.tfvars_path }}
+        working-directory: ${{ inputs.TF_WORKING_DIR }}
+
+      - name: Terraform Validate
+        run: terraform validate -var-file=${{ inputs.tfvars_path }}
+        working-directory: ${{ inputs.TF_WORKING_DIR }}
+
+      - name: Terraform Plan
+        run: terraform plan -out=tfplan -var-file=${{ inputs.tfvars_path }}
+        working-directory: ${{ inputs.TF_WORKING_DIR }}
+
+      - name: Terraform Apply
+        if: github.event_name == 'push'
+        run: terraform apply -auto-approve tfplan
+        working-directory: ${{ inputs.TF_WORKING_DIR }}
