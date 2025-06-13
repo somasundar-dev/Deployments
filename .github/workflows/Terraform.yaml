@@ -50,11 +50,11 @@ jobs:
         working-directory: ${{ inputs.TF_WORKING_DIR }}
 
       - name: Terraform Validate
-        run: terraform validate -var-file=${{ inputs.tfvars_path }}
+        run: terraform validate -var-file="${{ inputs.tfvars_path }}"
         working-directory: ${{ inputs.TF_WORKING_DIR }}
 
       - name: Terraform Plan
-        run: terraform plan -out=tfplan -var-file=${{ inputs.tfvars_path }}
+        run: terraform plan -out=tfplan -var-file="${{ inputs.tfvars_path }}"
         working-directory: ${{ inputs.TF_WORKING_DIR }}
 
       - name: Terraform Apply
