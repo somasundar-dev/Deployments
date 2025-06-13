@@ -3,6 +3,16 @@ name: Terraform CI/CD
 on:
   workflow_call:
     inputs:
+      run_deployment:
+        description: "Terraform Apply to Deploy Changes"
+        required: true
+        default: false
+        type: boolean
+      run_destroy:
+        description: "Terraform Destroy to Remove Changes"
+        required: false
+        default: false
+        type: boolean
       tfvars_path:
         description: "Path to the tfvars file"
         required: true
@@ -23,6 +33,11 @@ jobs:
 
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v3
+
+      - name: Logs Paths
+        run: |
+          echo ${{ inputs.TF_WORKING_DIR }}
+          echo ${{ inputs.tfvars_path }}
 
       - name: Terraform Init
         run: terraform init
