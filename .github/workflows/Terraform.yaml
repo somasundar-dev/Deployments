@@ -2,6 +2,13 @@ name: Terraform CI/CD
 
 on:
   workflow_call:
+    secrets:
+      aws_identity_provider_role:
+        description: "AWS Identity Provider Role"
+        required: true
+      aws_region:
+        description: "AWS Region to Deploy"
+        required: true
     inputs:
       run_deployment:
         description: "Terraform Apply to Deploy Changes"
@@ -21,14 +28,6 @@ on:
         description: "Terraform working directory"
         required: true
         type: string
-      aws_identity_provider_role:
-        description: "AWS Identity Provider Role"
-        required: true
-        type: string
-      aws_region:
-        description: "AWS Region to Deploy"
-        required: true
-        type: string
 
 jobs:
   terraform:
@@ -42,8 +41,8 @@ jobs:
       - name: Configure AWS
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ inputs.aws_identity_provider_role }}
-          aws-region: ${{ inputs.aws_region }}
+          role-to-assume: ${{ secrets.aws_identity_provider_role }}
+          aws-region: ${{ secrets.aws_region }}
 
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v3
