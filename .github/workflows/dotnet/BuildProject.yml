@@ -12,9 +12,6 @@ jobs:
   build-test:
     name: 🧪 Build & Test
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ${{ inputs.solution_path }}
     steps:
       - uses: actions/checkout@v3
 
@@ -24,11 +21,11 @@ jobs:
           dotnet-version: "8.0.x"
 
       - name: Restore
-        run: dotnet restore
+        run: dotnet restore ${{ inputs.solution_path }}
 
       - name: Build
-        run: dotnet build --configuration Release --no-restore
+        run: dotnet build ${{ inputs.solution_path }} --configuration Release --no-restore
 
       - name: Test with Coverage
         run: |
-          dotnet test --configuration Release --no-build --verbosity normal
+          dotnet test ${{ inputs.solution_path }} --configuration Release --no-build --verbosity normal
