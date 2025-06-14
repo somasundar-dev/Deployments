@@ -21,6 +21,14 @@ on:
         description: "Terraform working directory"
         required: true
         type: string
+      aws_identity_provider_role:
+        description: "AWS Identity Provider Role"
+        required: true
+        type: string
+      aws_region:
+        description: "AWS Region to Deploy"
+        required: true
+        type: string
 
 jobs:
   terraform:
@@ -30,6 +38,12 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+
+      - name: Configure AWS
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ inputs.aws_identity_provider_role }}
+          aws-region: ${{ inputs.aws_region }}
 
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v3
