@@ -1,13 +1,20 @@
 name: Build & Test Contact Form Project
 
 on:
-  workflow_dispatch:
   workflow_call:
+    inputs:
+      solution_path:
+        description: Path to Project Solution File
+        required: true
+        type: string
 
 jobs:
   build-test:
     name: 🧪 Build & Test
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ inputs.solution_path }}
     steps:
       - uses: actions/checkout@v3
 
