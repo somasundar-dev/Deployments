@@ -36,6 +36,9 @@ jobs:
   terraform:
     name: "Terraform Plan and Apply"
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ inputs.TF_WORKING_DIR }}
 
     steps:
       - name: Checkout code
@@ -52,33 +55,40 @@ jobs:
 
       - name: Logs Paths
         run: |
-          echo ${{ inputs.TF_WORKING_DIR }}
-          echo ${{ inputs.tfvars_path }}
+          echo "${{ inputs.TF_WORKING_DIR }}"
+          echo "${{ inputs.tfvars_path }}"
           echo "List Current Directory"
           ls
 
+      - name: Check if Build Exists
+        run: ls ./../src/ContactForm.API/bin/Release/net8.0
+
+      - name: Check if Data Exists in JSON
+        run: ls -l "${{ inputs.tfvars_path }}"
+
+      - name: Check if Log Data in JSON
+        run: |
+          echo "Logging contents of tfvars.json"
+          cat "${{ inputs.tfvars_path }}"
+          echo "pretty print contents of tfvars.json"
+          jq . "${{ inputs.tfvars_path }}"
+
       - name: Terraform Init
         run: terraform init
-        working-directory: ${{ inputs.TF_WORKING_DIR }}
 
       - name: Terraform Format
         run: terraform fmt -check
-        working-directory: ${{ inputs.TF_WORKING_DIR }}
 
       - name: Terraform Validate
         run: terraform validate
-        working-directory: ${{ inputs.TF_WORKING_DIR }}
 
       - name: Terraform Plan
         run: terraform plan -out=tfplan -var-file="${{ inputs.tfvars_path }}"
-        working-directory: ${{ inputs.TF_WORKING_DIR }}
 
       - name: Terraform Apply
         if: inputs.run_deployment
         run: terraform apply -auto-approve tfplan
-        working-directory: ${{ inputs.TF_WORKING_DIR }}
 
       - name: Terraform Destroy
         if: inputs.run_destroy
         run: terraform destroy -auto-approve tfplan
-        working-directory: ${{ inputs.TF_WORKING_DIR }}
